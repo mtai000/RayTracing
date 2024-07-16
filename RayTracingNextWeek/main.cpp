@@ -43,8 +43,8 @@ int main() {
 	}
 
 	Camera cam;
-	cam.SetImageHeightAndAspectRatio(1800, 16.0 / 9);
-	cam.SetSampleNum(500);
+	cam.SetImageHeightAndAspectRatio(180, 16.0 / 9);
+	cam.SetSampleNum(50);
 	cam.SetMaxDepth(50);
 
 	cam.SetCameraPara(Vec3(13, 2, 3), Vec3(0, 0, 0), Vec3(0, 1, 0), 25);
@@ -52,4 +52,5 @@ int main() {
 	cam.mDefocusLength = 10.0;
 
 	cam.Render(world);
+	cam.WriteBufferToFile("image.ppm");
 }

@@ -3,7 +3,12 @@
 #include "Hittable_list.h"
 #include <iomanip>
 #include "Material.h"
+#include <fstream>
+#include <thread>
+#include <mutex>
 
+
+std::mutex g_mutex;
 class Camera {
 public:
 	Camera() {
@@ -16,24 +21,79 @@ public:
 	}
 	~Camera() {}
 
+
+	static void RenderThread(Hittable_list& world, int startHeight, int endHeight, Camera& cam)
+	{
+		
+		int complete_line = 0;
+		for (int h = startHeight; h < endHeight; h++)
+		{
+			for (int w = 0; w < cam.mWidth; w++) {
+				Color pixel_color(0.0, 0.0, 0.0);
+				for (int k = 0; k < cam.mSamplePerPixel; k++) {
+					Ray r = cam.GetRay(w, h);
+					pixel_color += cam.RayColor(r, cam.mMaxDepth, world);
+				}
+				cam.mColorFrame[h * cam.mWidth + w] = pixel_color * cam.mSampleScale;
+			}
+
+			//g_mutex.lock();
+			//complete_line++;
+			//std::cout << std::setw(4) << std::setfill(' ') << cam.mHeight - complete_line << '\r';
+			//std::cout.flush();
+			//g_mutex.unlock();
+		}
+	}
+
 	void Render(Hittable_list& world) {
 		Init();
-		std::cout << "P3\n" << mWidth << ' ' << mHeight << "\n255\n" << std::endl;
+		//std::cout << "P3\n" << mWidth << ' ' << mHeight << "\n255\n" << std::endl;
 
-		for (int j = 0; j < mHeight; j++)
+		auto core_num = std::thread::hardware_concurrency();
+		//core_num = 1;
+		auto heightForThread = mHeight / core_num + 1;
+		std::vector<std::thread> jobs;
+
+		if (1)
 		{
-			std::clog << '\r' << std::setw(4) << std::setfill('0') << mHeight - j << std::flush;
-			for (int i = 0; i < mWidth; i++) {
-				Color pixel_color(0.0, 0.0, 0.0);
-				for (int k = 0; k < mSamplePerPixel; k++) {
-					Ray r = GetRay(i, j);
-					pixel_color += RayColor(r, mMaxDepth, world);
-				}
-				Write_Color(std::cout, pixel_color * mSampleScale);
+			for (int i = 0; i < core_num; i++) {
+				jobs.push_back(std::thread(RenderThread, std::ref(world), i * heightForThread, std::fmin((i + 1) * heightForThread, mHeight), std::ref(*this)));
 			}
+
+			for (int i = 0; i < jobs.size(); i++)
+				jobs[i].join();
+		}
+		else
+		{
+			RenderThread(world, 0, mHeight - 1, *this);
 		}
 
 		std::clog << "\rDone			\n";
+	}
+
+	void WriteBufferToFile(const char* filename)
+	{
+		std::ofstream file;
+		file.open(filename);
+		file << "P3\n" << mWidth << ' ' << mHeight << "\n255\n" << std::endl;
+		for (int i = 0; i < mColorFrame.size(); i++)
+		{
+			auto r = mColorFrame[i].x();
+			auto g = mColorFrame[i].y();
+			auto b = mColorFrame[i].z();
+			r = linear_to_gamma(r);
+			g = linear_to_gamma(g);
+			b = linear_to_gamma(b);
+
+			static const Interval interval(0.0, 0.999);
+			auto ir = int(256 * interval.Clamp(r));
+			auto ig = int(256 * interval.Clamp(g));
+			auto ib = int(256 * interval.Clamp(b));
+
+			file << ir << ' ' << ig << ' ' << ib << std::endl;
+			//Write_Color(file, mColorFrame[i]);
+		}
+		file.close();
 	}
 
 	void SetPosition(Vec3 pos) { mPosition = pos; }
@@ -74,7 +134,7 @@ private:
 
 	Vec3 defocus_u;
 	Vec3 defocus_v;
-
+	std::vector<Color> mColorFrame;
 
 	Color RayColor(const Ray& r, unsigned int depth, Hittable_list& world) {
 		HitRecord hit_rec;
@@ -107,7 +167,8 @@ private:
 	{
 		mWidth = mHeight * mAspectRatio;
 		mSampleScale = 1.0 / mSamplePerPixel;
-
+		mColorFrame.resize(mWidth * mHeight);
+		std::fill(std::begin(mColorFrame), std::end(mColorFrame), Color(0.0, 0.0, 0.0));
 		// view_height / (lookat - lookfrom).length()  = tan(mFov/2)
 		//double viewport_height = tan(degrees_to_radians(mFov / 2)) * (mLookAt - mLookFrom).length() * 2;
 		double viewport_height = 2 * tan(degrees_to_radians(mFov / 2)) * mDefocusLength;
@@ -127,7 +188,7 @@ private:
 
 
 		//pixel00_loc = Vec3(-viewport_width / 2, viewport_height / 2, -force_length) + 0.5 * (pixel_delta_u + pixel_delta_v);
-		auto viewport_upper_left = mLookFrom + _forward * mDefocusLength  - viewport_u / 2 - viewport_v / 2;
+		auto viewport_upper_left = mLookFrom + _forward * mDefocusLength - viewport_u / 2 - viewport_v / 2;
 		pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
 		auto defocus_raidus = tan(degrees_to_radians(mDefocusAngle / 2)) * mDefocusLength;

@@ -32,4 +32,3 @@ Color RandomColor() {
 inline Color operator* (const Color& attenuation, const Color& color) {
 	return Color(attenuation.x() * color.x(), attenuation.y() * color.y(), attenuation.z() * color.z());
 }
-
