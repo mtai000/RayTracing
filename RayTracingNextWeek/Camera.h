@@ -22,8 +22,6 @@ public:
 
 	static void RenderThread(Hittable_list& world, int startHeight, int endHeight, Camera& cam)
 	{
-
-		
 		for (int h = startHeight; h < endHeight; h++)
 		{
 			for (int w = 0; w < cam.mWidth; w++) {

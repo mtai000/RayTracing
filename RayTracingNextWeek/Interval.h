@@ -7,7 +7,7 @@ public:
 	Interval() :min(Infinity), max(-Infinity) {}
 	Interval(double _min, double _max) :min(_min), max(_max) {}
 
-	bool Size() const {
+	double Size() const {
 		return max - min;
 	}
 
@@ -19,7 +19,7 @@ public:
 		return t< max && t > min;
 	}
 
-	static const Interval emply, universe;
+	static const Interval empty, universe;
 
 	double Clamp(double x) const
 	{
@@ -29,5 +29,5 @@ public:
 	}
 };
 
-const Interval Interval::emply = Interval(Infinity, -Infinity);
+const Interval Interval::empty = Interval(Infinity, -Infinity);
 const Interval Interval::universe = Interval(-Infinity, Infinity);

@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "Material.h"
 #include "MyTimer.h"
+#include "bvh.h"
 
 void Process(const char* output) {
 	Hittable_list world;
@@ -50,8 +51,10 @@ void Process(const char* output) {
 	auto material3 = make_shared<MetalMaterial>(Color(0.7, 0.6, 0.5), 0.0);
 	world.Add(make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
 
+	world = Hittable_list(make_shared<bvh>(world));
+
 	Camera cam;
-	cam.SetImageHeightAndAspectRatio(180, 16.0 / 9);
+	cam.SetImageHeightAndAspectRatio(1000, 16.0 / 9);
 	cam.SetSampleNum(50);
 	cam.SetMaxDepth(50);
 

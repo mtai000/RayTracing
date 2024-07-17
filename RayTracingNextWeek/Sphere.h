@@ -5,14 +5,25 @@
 class Sphere :public Hittable {
 public:
 	Sphere(const Point3& p, double radius, shared_ptr<class Material> mat)
-		: mCenter(p), mRadius(radius > 0 ? radius : 0), mMat(mat), bIsMove(false) {}
+		: mCenter(p), mRadius(radius > 0 ? radius : 0), mMat(mat), bIsMove(false)
+	{
+		auto r = Vec3(mRadius, mRadius, mRadius);
+		mBox = aabb(mCenter - r, mCenter + r);
+	}
+
 	Sphere(const Point3& p1, const Point3& p2, double radius, shared_ptr<class Material> mat)
-		: mCenter(p1), mTargetCenter(p2), mRadius(radius > 0 ? radius : 0), mMat(mat), bIsMove(true) {
+		: mCenter(p1), mTargetCenter(p2), mRadius(radius > 0 ? radius : 0), mMat(mat), bIsMove(true)
+	{
 		mMoveDirection = mTargetCenter - mCenter;
+
+		auto r = Vec3(mRadius, mRadius, mRadius);
+		auto aabb1 = aabb(mCenter - r, mCenter + r);
+		auto aabb2 = aabb(mTargetCenter - r, mTargetCenter + r);
+		mBox = aabb(aabb1, aabb2);
 	}
 
 	bool Hit(const Ray& r, Interval inter, HitRecord& out_record) const override {
-
+		//printf("Hit sphere: %f\n", mRadius);
 		Point3 curCenter = bIsMove ? GetCurCenter(r.GetTime()) : mCenter;
 		auto oc = curCenter - r.GetOrigin();
 
@@ -43,6 +54,8 @@ public:
 		return true;
 	}
 
+	aabb GetBoundingBox() const override { return mBox; }
+
 	Point3 GetCurCenter(double time) const {
 		return mCenter + mMoveDirection * time;
 	}
@@ -53,4 +66,5 @@ private:
 	shared_ptr<class Material> mMat;
 	Vec3 mMoveDirection;
 	bool bIsMove;
+	aabb mBox;
 };

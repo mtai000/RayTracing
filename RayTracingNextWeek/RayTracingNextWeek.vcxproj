@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="aabb.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Hittable.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="rtweekend.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="MyTimer.h" />
+    <ClInclude Include="bvh.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
   <ItemGroup>
