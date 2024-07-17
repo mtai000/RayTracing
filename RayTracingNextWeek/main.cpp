@@ -6,6 +6,7 @@
 #include "Material.h"
 #include "MyTimer.h"
 #include "bvh.h"
+#include "svh.h"
 
 void Process(const char* output) {
 	Hittable_list world;
@@ -54,12 +55,12 @@ void Process(const char* output) {
 	world = Hittable_list(make_shared<bvh>(world));
 
 	Camera cam;
-	cam.SetImageHeightAndAspectRatio(1000, 16.0 / 9);
-	cam.SetSampleNum(50);
+	cam.SetImageHeightAndAspectRatio(400, 16.0 / 9);
+	cam.SetSampleNum(500);
 	cam.SetMaxDepth(50);
 
 	cam.SetCameraPara(Vec3(13, 2, 3), Vec3(0, 0, 0), Vec3(0, 1, 0), 25);
-	cam.mDefocusAngle = 0.6;
+	cam.mDefocusAngle = 0.0;
 	cam.mDefocusLength = 10.0;
 
 	cam.Render(world);

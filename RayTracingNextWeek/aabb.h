@@ -29,14 +29,18 @@ public:
 
 	Interval x, y, z;
 
+	double Area()
+	{
+		return 2 * (x.Size() * y.Size() + y.Size() * z.Size() + z.Size() * x.Size());
+	}
+
 	bool Hit(const Ray& r, Interval ray_t) const {
 		auto inv_dir = 1 / r.GetDirection();
 		for (int i = 0; i < 3; i++) {
 			const Interval& a = GetAxis(i);
 			auto min = (a.min - r.GetOrigin()[i]) * inv_dir[i];
 			auto max = (a.max - r.GetOrigin()[i]) * inv_dir[i];
-			if (min > max)
-				std::swap(min, max);
+			if (min > max) std::swap(min, max);
 			if (min > ray_t.min) ray_t.min = min;
 			if (max < ray_t.max) ray_t.max = max;
 			if (ray_t.max <= ray_t.min)

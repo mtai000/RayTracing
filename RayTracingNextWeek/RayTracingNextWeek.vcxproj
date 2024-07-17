@@ -139,6 +139,7 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="MyTimer.h" />
     <ClInclude Include="bvh.h" />
+    <ClInclude Include="svh.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
   <ItemGroup>
