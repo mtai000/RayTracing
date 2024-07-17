@@ -7,8 +7,6 @@
 #include <thread>
 #include <mutex>
 
-
-std::mutex g_mutex;
 class Camera {
 public:
 	Camera() {
@@ -24,8 +22,8 @@ public:
 
 	static void RenderThread(Hittable_list& world, int startHeight, int endHeight, Camera& cam)
 	{
+
 		
-		int complete_line = 0;
 		for (int h = startHeight; h < endHeight; h++)
 		{
 			for (int w = 0; w < cam.mWidth; w++) {
@@ -37,11 +35,10 @@ public:
 				cam.mColorFrame[h * cam.mWidth + w] = pixel_color * cam.mSampleScale;
 			}
 
-			//g_mutex.lock();
-			//complete_line++;
-			//std::cout << std::setw(4) << std::setfill(' ') << cam.mHeight - complete_line << '\r';
-			//std::cout.flush();
-			//g_mutex.unlock();
+			cam.g_mutex.lock();
+			cam.complete_line++;
+			std::clog << std::setw(4) << std::setfill(' ') << cam.mHeight - cam.complete_line << '\r' << std::flush;
+			cam.g_mutex.unlock();
 		}
 	}
 
@@ -132,6 +129,9 @@ private:
 	Vec3 pixel_delta_u;
 	Vec3 pixel_delta_v;
 
+	std::mutex g_mutex;
+	int complete_line = 0;
+
 	Vec3 defocus_u;
 	Vec3 defocus_v;
 	std::vector<Color> mColorFrame;
@@ -160,7 +160,7 @@ private:
 	Ray GetRay(int i, int j) {
 		auto offset = Vec3(random_double() - .5, random_double() - .5, 0);
 		auto from = mDefocusAngle <= 0 ? mLookFrom : RandomLookFrom();
-		return Ray(from, pixel00_loc + (i + offset.x()) * pixel_delta_u + (j + offset.y()) * pixel_delta_v - from);
+		return Ray(from, pixel00_loc + (i + offset.x()) * pixel_delta_u + (j + offset.y()) * pixel_delta_v - from, random_double());
 	}
 
 	void Init()

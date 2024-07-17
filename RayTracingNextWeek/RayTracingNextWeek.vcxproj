@@ -136,6 +136,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="rtweekend.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="MyTimer.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
   <ItemGroup>

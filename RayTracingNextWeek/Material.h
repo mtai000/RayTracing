@@ -24,7 +24,7 @@ public:
 		if (direction.Near_Zero())
 			direction = rec.Normal;
 
-		scatted = Ray(rec.p, direction);
+		scatted = Ray(rec.p, direction, in_ray.GetTime());
 		attenuation = mAlbedo;
 		return true;
 	}
@@ -43,7 +43,7 @@ public:
 		const override {
 		Vec3 reflect_dir = Reflect(in_ray.GetDirection(), rec.Normal);
 		reflect_dir = reflect_dir.normalized() + mFuzz * RandomUnitVec();
-		scatted = Ray(rec.p, reflect_dir);
+		scatted = Ray(rec.p, reflect_dir, in_ray.GetTime());
 		attenuation = mAlbedo;
 		return dot(scatted.GetDirection(), rec.Normal) > 0;
 	}
@@ -75,7 +75,7 @@ public:
 		{
 			direction = Refract(in_ray.GetDirection().normalized(), rec.Normal, refract_ratio);
 		}
-		scatted = Ray(rec.p, direction);
+		scatted = Ray(rec.p, direction, in_ray.GetTime());
 		attenuation = Color(1.0, 1.0, 1.0);
 		return true;
 	}

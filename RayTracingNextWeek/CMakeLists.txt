@@ -1,5 +1,5 @@
-project(RayTracingInOneWeekend)
+project(RayTracingNextWeek)
 
 file(GLOB src *.cpp *.h)
 
-add_executable(RayTracingInOneWeekend ${src})
+add_executable(RayTracingNextWeek ${src})

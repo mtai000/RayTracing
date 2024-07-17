@@ -4,8 +4,9 @@
 #include "Sphere.h"
 #include "Camera.h"
 #include "Material.h"
+#include "MyTimer.h"
 
-int main() {
+void Process(const char* output) {
 	Hittable_list world;
 
 	auto ground_material = make_shared<LamberMaterial>(Color(0.5, 0.5, 0.5));
@@ -22,7 +23,8 @@ int main() {
 				if (_mat < 0.8) {
 					auto albedo = RandomColor() * RandomColor();
 					sphere_material = make_shared<LamberMaterial>(albedo);
-					world.Add(make_shared<Sphere>(center, 0.2, sphere_material));
+					auto center2 = center + Vec3(0, random_double(0, 0.5), 0);
+					world.Add(make_shared<Sphere>(center, center2, 0.2, sphere_material));
 				}
 				else if (_mat < 0.95)
 				{
@@ -35,12 +37,18 @@ int main() {
 					sphere_material = make_shared<DielectricMaterial>(1.5);
 					world.Add(make_shared<Sphere>(center, 0.2, sphere_material));
 				}
-
 			}
-
-
 		}
 	}
+
+	auto material1 = make_shared <DielectricMaterial >(1.5);
+	world.Add(make_shared<Sphere>(Point3(0, 1, 0), 1.0, material1));
+
+	auto material2 = make_shared<LamberMaterial>(Color(0.4, 0.2, 0.1));
+	world.Add(make_shared<Sphere>(Point3(-4, 1, 0), 1.0, material2));
+
+	auto material3 = make_shared<MetalMaterial>(Color(0.7, 0.6, 0.5), 0.0);
+	world.Add(make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
 
 	Camera cam;
 	cam.SetImageHeightAndAspectRatio(180, 16.0 / 9);
@@ -52,5 +60,11 @@ int main() {
 	cam.mDefocusLength = 10.0;
 
 	cam.Render(world);
-	cam.WriteBufferToFile("image.ppm");
+	cam.WriteBufferToFile(output);
+}
+
+
+int main() {
+	MyTimer t;
+	Process("image.ppm");
 }
