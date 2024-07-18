@@ -6,7 +6,7 @@ public:
 	aabb() {}
 
 	aabb(const Interval& _x, const Interval& _y, const Interval& _z)
-		: x(_x), y(_y), z(_z) 
+		: x(_x), y(_y), z(_z)
 	{
 		PadToMinimums();
 	}
@@ -64,7 +64,7 @@ public:
 
 	const static aabb empty, universe;
 private:
-	void PadToMinimums() 
+	void PadToMinimums()
 	{
 		double epsilon = 0.00001;
 		if (x.Size() < epsilon) x = x.Expand(epsilon);
@@ -73,6 +73,16 @@ private:
 
 	}
 };
+
+aabb operator+ (const aabb& box, const Vec3& offset)
+{
+	return aabb(box.x + offset.x(), box.y + offset.y(), box.z + offset.z());
+}
+
+aabb operator+ (const Vec3& offset, const aabb& box)
+{
+	return aabb(box.x + offset.x(), box.y + offset.y(), box.z + offset.z());
+}
 
 const aabb aabb::empty = aabb(Interval::empty, Interval::empty, Interval::empty);
 const aabb aabb::universe = aabb(Interval::universe, Interval::universe, Interval::universe);

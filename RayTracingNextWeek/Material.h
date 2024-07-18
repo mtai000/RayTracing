@@ -13,7 +13,7 @@ public:
 		return false;
 	}
 
-	virtual Color Emmitted(double u, double v, const Point3& p) const {
+	virtual Color Emitted(double u, double v, const Point3& p) const {
 		return Color(0, 0, 0);
 	}
 
@@ -105,6 +105,24 @@ public:
 
 	Color Emitted(double u, double v, const Point3& p) const override {
 		return mTexture->Value(u, v, p);
+	}
+
+private:
+	shared_ptr<Texture> mTexture;
+};
+
+//各向同性
+class Isotropic : public Material {
+public:
+	Isotropic(const Color& albedo) : mTexture(make_shared<SolidColor>(albedo)) {}
+	Isotropic(shared_ptr<Texture> tex) : mTexture(tex) {}
+
+	bool Scatter(const Ray& r_in, const HitRecord& rec, Color& attenuation, Ray& scattered)
+		const override
+	{
+		scattered = Ray(rec.p, RandomUnitVec(), r_in.GetTime());
+		attenuation = mTexture->Value(rec.u, rec.v, rec.p);
+		return true;
 	}
 
 private:

@@ -9,6 +9,7 @@
 #include "svh.h"
 #include "Color.h"
 #include "Quad.h"
+#include "ConstantMedium.h"
 
 std::string output = "image.ppm";
 
@@ -140,17 +141,17 @@ void Quads() {
 	//back->Hit(test, Interval(0, 1.0), rec);
 	Hittable_list world;
 
-	auto left_red		= make_shared<LamberMaterial>(Color(1.0, 0.2, 0.2));
-	auto back_green		= make_shared<LamberMaterial>(Color(0.2, 1.0, 0.2));
-	auto right_blue		= make_shared<LamberMaterial>(Color(0.2, 0.2, 1.0));
-	auto upper_orange	= make_shared<LamberMaterial>(Color(1.0, 0.5, 0.0));
-	auto lower_teal		= make_shared<LamberMaterial>(Color(0.2, 0.8, 0.8));
+	auto left_red = make_shared<LamberMaterial>(Color(1.0, 0.2, 0.2));
+	auto back_green = make_shared<LamberMaterial>(Color(0.2, 1.0, 0.2));
+	auto right_blue = make_shared<LamberMaterial>(Color(0.2, 0.2, 1.0));
+	auto upper_orange = make_shared<LamberMaterial>(Color(1.0, 0.5, 0.0));
+	auto lower_teal = make_shared<LamberMaterial>(Color(0.2, 0.8, 0.8));
 
-	world.Add(make_shared<Quad>(Point3(-3, -2, 5), Vec3(0, 0, -4), Vec3(0, 4,  0), left_red));
-	world.Add(make_shared<Quad>(Point3(-2, -2, 0), Vec3(4, 0,  0), Vec3(0, 4,  0), back_green));
-	world.Add(make_shared<Quad>(Point3( 3, -2, 1), Vec3(0, 0,  4), Vec3(0, 4,  0), right_blue));
-	world.Add(make_shared<Quad>(Point3(-2,  3, 1), Vec3(4, 0,  0), Vec3(0, 0,  4), upper_orange));
-	world.Add(make_shared<Quad>(Point3(-2, -3, 5), Vec3(4, 0,  0), Vec3(0, 0, -4), lower_teal));
+	world.Add(make_shared<Quad>(Point3(-3, -2, 5), Vec3(0, 0, -4), Vec3(0, 4, 0), left_red));
+	world.Add(make_shared<Quad>(Point3(-2, -2, 0), Vec3(4, 0, 0), Vec3(0, 4, 0), back_green));
+	world.Add(make_shared<Quad>(Point3(3, -2, 1), Vec3(0, 0, 4), Vec3(0, 4, 0), right_blue));
+	world.Add(make_shared<Quad>(Point3(-2, 3, 1), Vec3(4, 0, 0), Vec3(0, 0, 4), upper_orange));
+	world.Add(make_shared<Quad>(Point3(-2, -3, 5), Vec3(4, 0, 0), Vec3(0, 0, -4), lower_teal));
 
 
 	Camera cam;
@@ -165,7 +166,92 @@ void Quads() {
 	cam.WriteBufferToFile(output.c_str());
 }
 
+void CornelBox()
+{
+	Hittable_list world;
+	auto red = make_shared<LamberMaterial>(Color(.65, .05, .05));
+	auto white = make_shared<LamberMaterial>(Color(.93, .93, .93));
+	auto green = make_shared<LamberMaterial>(Color(.12, .45, .15));
+	auto grey = make_shared<LamberMaterial>(Color(.3, .3, .3));
+
+	auto light = make_shared<DiffuseLight>(Color(15, 15, 15));
+
+	world.Add(make_shared<Quad>(Point3(555, 0, 0), Vec3(0, 555, 0), Vec3(0, 0, 555), green));
+	world.Add(make_shared<Quad>(Point3(0, 0, 0), Vec3(0, 555, 0), Vec3(0, 0, 555), red));
+	world.Add(make_shared<Quad>(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), light));
+	world.Add(make_shared<Quad>(Point3(0, 0, 0), Vec3(555, 0, 0), Vec3(0, 0, 555), white));
+	world.Add(make_shared<Quad>(Point3(555, 555, 555), Vec3(-555, 0, 0), Vec3(0, 0, -555), white));
+	world.Add(make_shared<Quad>(Point3(0, 0, 555), Vec3(555, 0, 0), Vec3(0, 555, 0), white));
+
+
+	shared_ptr<Hittable> box1 = box(Point3(0, 0, 0), Point3(165, 330, 165), white);
+	box1 = make_shared<RotateY>(box1, 15);
+	box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
+	world.Add(box1);
+
+	shared_ptr<Hittable> box2 = box(Point3(0, 0, 0), Point3(165, 165, 165), white);
+	box2 = make_shared<RotateY>(box2, -18);
+	box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
+	world.Add(box2);
+
+	Camera cam;
+	cam.SetImageHeightAndAspectRatio(400, 1.0);
+	cam.SetSampleNum(200);
+	cam.SetMaxDepth(50);
+	cam.SetBackground(Color(0, 0, 0));
+
+	cam.SetCameraPara(Vec3(278, 278, -800), Vec3(278, 278, 0), Vec3(0, 1, 0), 40);
+	cam.mDefocusAngle = 0.0;
+
+	cam.Render(world);
+	cam.WriteBufferToFile(output.c_str());
+}
+
+void CornellSmoke() {
+	Hittable_list world;
+	auto red = make_shared<LamberMaterial>(Color(.65, .05, .05));
+	auto white = make_shared<LamberMaterial>(Color(.73, .73, .73));
+	auto green = make_shared<LamberMaterial>(Color(.12, .45, .15));
+	auto light = make_shared<DiffuseLight>(Color(15, 15, 15));
+
+
+	world.Add(make_shared<Quad>(Point3(555, 0, 0), Vec3(0, 555, 0), Vec3(0, 0, 555), green));
+	world.Add(make_shared<Quad>(Point3(0, 0, 0), Vec3(0, 555, 0), Vec3(0, 0, 555), red));
+	world.Add(make_shared<Quad>(Point3(113, 554, 127), Vec3(330, 0, 0), Vec3(0, 0, 305), light));
+	//world.Add(make_shared<Quad>(Point3(343, 554, 332), Vec3(-130, 0, 0), Vec3(0, 0, -105), light));
+
+	world.Add(make_shared<Quad>(Point3(0, 555, 0), Vec3(555, 0, 0), Vec3(0, 0, 555), white));
+	world.Add(make_shared<Quad>(Point3(0, 0, 0), Vec3(555, 0, 0), Vec3(0, 0, 555), white));
+	world.Add(make_shared<Quad>(Point3(0, 0, 555), Vec3(555, 0, 0), Vec3(0, 555, 0), white));
+
+	shared_ptr<Hittable> box1 = box(Point3(0, 0, 0), Point3(165, 230, 165), white);
+	box1 = make_shared<RotateY>(box1, 0);
+	box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
+
+	shared_ptr<Hittable> box2 = box(Point3(0, 0, 0), Point3(165, 165, 165), white);
+	box2 = make_shared<RotateY>(box2, 0);
+	box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
+
+	world.Add(make_shared<ConstantMedium>(box1, 0.001, Color(0, 0, 0)));
+	world.Add(make_shared<ConstantMedium>(box2, 0.001, Color(1, 1, 1)));
+	//world.Add(box1);
+	//world.Add(box2);
+
+	Camera cam;
+	cam.SetImageHeightAndAspectRatio(600, 1.0);
+	cam.SetSampleNum(100);
+	cam.SetMaxDepth(50);
+	cam.SetBackground(Color(0, 0, 0));
+
+	cam.SetCameraPara(Vec3(278, 278, -800), Vec3(278, 278, 0), Vec3(0, 1, 0), 40);
+	cam.mDefocusAngle = 0.0;
+
+	cam.Render(world);
+	cam.WriteBufferToFile(output.c_str());
+}
+
+
 int main() {
 	MyTimer t;
-	Quads();
+	CornellSmoke();
 }

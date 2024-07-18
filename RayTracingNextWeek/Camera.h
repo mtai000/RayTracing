@@ -18,6 +18,7 @@ public:
 		mSamplePerPixel = 10;
 		mMaxDepth = 10;
 		mSampleScale = 0.1;
+		mBackgroundColor = Color(0.70, 0.80, 1.00);
 	}
 	~Camera() {}
 
@@ -112,6 +113,11 @@ public:
 		mFov = fov;
 	}
 
+	void SetBackground(const Color& c)
+	{
+		mBackgroundColor = c;
+	}
+
 	Vec3 mLookAt = Vec3(0, 0, -1);
 	Vec3 mLookFrom = Vec3(0, 0, 0);;
 	Vec3 mUp = Vec3(0, 1, 0);
@@ -145,20 +151,23 @@ private:
 		if (depth <= 0)
 			return Color(0.0, 0.0, 0.0);
 
-		if (world.Hit(r, Interval(0.00001, Infinity), hit_rec))
+		if (!world.Hit(r, Interval(0.00001, Infinity), hit_rec))
 		{
-			Ray scatter;
-			Color attenuation;
-			if (hit_rec.mat->Scatter(r, hit_rec, attenuation, scatter))
-			{
-				return attenuation * RayColor(scatter, depth - 1, world);
-			}
-			return Color(0, 0, 0);
+			return mBackgroundColor;
 		}
-		Vec3 _r = normailze(r.GetDirection());
-		// t = [0.5,1]
-		double a = 0.5 * (_r.y() + 1);
-		return (1 - a) * Vec3(1.0, 1.0, 1.0) + a * Vec3(0.5, 0.7, 1.0);
+
+		Ray scatter;
+		Color attenuation;
+		Color colorFromEmission = hit_rec.mat->Emitted(hit_rec.u, hit_rec.v, hit_rec.p);
+
+		if (!hit_rec.mat->Scatter(r, hit_rec, attenuation, scatter))
+		{
+			return colorFromEmission;
+		}
+
+		auto ColorFromScatter = attenuation * RayColor(scatter, depth - 1, world);
+
+		return colorFromEmission + ColorFromScatter;
 	}
 
 	Ray GetRay(int i, int j) {

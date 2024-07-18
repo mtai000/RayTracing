@@ -130,6 +130,7 @@
     <ClInclude Include="aabb.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="ConstantMedium.h" />
     <ClInclude Include="Hittable.h" />
     <ClInclude Include="Hittable_list.h" />
     <ClInclude Include="Interval.h" />

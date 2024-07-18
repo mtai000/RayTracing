@@ -72,3 +72,32 @@ private:
 	Vec3 mNormal;
 	double planeValue;
 };
+
+inline shared_ptr<Hittable_list> box(const Point3& a, const Point3& b, shared_ptr<Material> mat)
+{
+	auto ret = make_shared<Hittable_list>();
+
+	aabb  ab = aabb(a, b);
+
+	auto dx = Vec3(ab.x.Size(), 0, 0);
+	auto dy = Vec3(0, ab.y.Size(), 0);
+	auto dz = Vec3(0, 0, ab.z.Size());
+
+
+	// left
+	ret->Add(make_shared<Quad>(Point3(ab.x.max, ab.y.min, ab.z.min),  dz, dy, mat));  
+	//right
+	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.min, ab.z.min),  dy, dz, mat)); 
+
+	//front
+	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.min, ab.z.min),  dx, dy, mat));
+	//back
+	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.min, ab.z.max),  dy, dz, mat)); 
+
+	//top
+	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.max, ab.z.min),  dx,  dz, mat));
+	//bottom
+	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.min, ab.z.min),  dz,  dx, mat)); 
+
+	return ret;
+}
