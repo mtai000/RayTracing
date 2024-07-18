@@ -92,7 +92,7 @@ inline shared_ptr<Hittable_list> box(const Point3& a, const Point3& b, shared_pt
 	//front
 	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.min, ab.z.min),  dx, dy, mat));
 	//back
-	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.min, ab.z.max),  dy, dz, mat)); 
+	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.min, ab.z.max),  dy, dx, mat)); 
 
 	//top
 	ret->Add(make_shared<Quad>(Point3(ab.x.min, ab.y.max, ab.z.min),  dx,  dz, mat));

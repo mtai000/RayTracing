@@ -184,12 +184,12 @@ void CornelBox()
 	world.Add(make_shared<Quad>(Point3(0, 0, 555), Vec3(555, 0, 0), Vec3(0, 555, 0), white));
 
 
-	shared_ptr<Hittable> box1 = box(Point3(0, 0, 0), Point3(165, 330, 165), white);
+	shared_ptr<Hittable> box1 = box(Point3(0, 0, 0), Point3(165, 230, 165), white);
 	box1 = make_shared<RotateY>(box1, 15);
 	box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
 	world.Add(box1);
 
-	shared_ptr<Hittable> box2 = box(Point3(0, 0, 0), Point3(165, 165, 165), white);
+	shared_ptr<Hittable> box2 = box(Point3(0, 0, 0), Point3(165, 165, 165), grey);
 	box2 = make_shared<RotateY>(box2, -18);
 	box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
 	world.Add(box2);
@@ -212,7 +212,7 @@ void CornellSmoke() {
 	auto red = make_shared<LamberMaterial>(Color(.65, .05, .05));
 	auto white = make_shared<LamberMaterial>(Color(.73, .73, .73));
 	auto green = make_shared<LamberMaterial>(Color(.12, .45, .15));
-	auto light = make_shared<DiffuseLight>(Color(15, 15, 15));
+	auto light = make_shared<DiffuseLight>(Color(7, 7, 7));
 
 
 	world.Add(make_shared<Quad>(Point3(555, 0, 0), Vec3(0, 555, 0), Vec3(0, 0, 555), green));
@@ -225,21 +225,21 @@ void CornellSmoke() {
 	world.Add(make_shared<Quad>(Point3(0, 0, 555), Vec3(555, 0, 0), Vec3(0, 555, 0), white));
 
 	shared_ptr<Hittable> box1 = box(Point3(0, 0, 0), Point3(165, 230, 165), white);
-	box1 = make_shared<RotateY>(box1, 0);
+	box1 = make_shared<RotateY>(box1, 18);
 	box1 = make_shared<Translate>(box1, Vec3(265, 0, 295));
 
 	shared_ptr<Hittable> box2 = box(Point3(0, 0, 0), Point3(165, 165, 165), white);
-	box2 = make_shared<RotateY>(box2, 0);
+	box2 = make_shared<RotateY>(box2, -15);
 	box2 = make_shared<Translate>(box2, Vec3(130, 0, 65));
 
-	world.Add(make_shared<ConstantMedium>(box1, 0.001, Color(0, 0, 0)));
-	world.Add(make_shared<ConstantMedium>(box2, 0.001, Color(1, 1, 1)));
+	world.Add(make_shared<ConstantMedium>(box1, 0.01, Color(0, 0, 0)));
+	world.Add(make_shared<ConstantMedium>(box2, 0.01, Color(0, 0.5, 1)));
 	//world.Add(box1);
 	//world.Add(box2);
 
 	Camera cam;
-	cam.SetImageHeightAndAspectRatio(600, 1.0);
-	cam.SetSampleNum(100);
+	cam.SetImageHeightAndAspectRatio(1200, 1.0);
+	cam.SetSampleNum(500);
 	cam.SetMaxDepth(50);
 	cam.SetBackground(Color(0, 0, 0));
 
@@ -253,5 +253,15 @@ void CornellSmoke() {
 
 int main() {
 	MyTimer t;
-	CornellSmoke();
+
+	switch (7) {
+	case 1:  Process();          break;
+	case 2:  CheckerSpheres();         break;
+	case 3:  earth();                     break;
+	case 4:  PerlinSpheres();            break;
+	case 5:  Quads();                     break;
+	case 6:  CornelBox();               break;
+	case 7:  CornellSmoke();             break;
+	default: ; break;
+	}
 }
