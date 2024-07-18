@@ -49,9 +49,15 @@ public:
 		out_record.p = r.At(inter_t);
 		out_record.t = inter_t;
 		out_record.SetFaceNormal(r, (out_record.p - curCenter) / mRadius);
+		GetSphereUV(out_record.Normal, out_record.u, out_record.v);
 		out_record.mat = mMat;
 
 		return true;
+	}
+
+	void GetSphereUV(const Point3& p, double& u, double& v) const {
+		u = (atan2(-p.z(), p.x()) + PI) / (2 * PI);
+		v = acos(-p.y()) / PI;
 	}
 
 	aabb GetBoundingBox() const override { return mBox; }

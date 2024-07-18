@@ -6,12 +6,16 @@ public:
 	aabb() {}
 
 	aabb(const Interval& _x, const Interval& _y, const Interval& _z)
-		: x(_x), y(_y), z(_z) {	}
+		: x(_x), y(_y), z(_z) 
+	{
+		PadToMinimums();
+	}
 
 	aabb(const Point3& a, const Point3& b) {
 		x = a[0] > b[0] ? Interval(b[0], a[0]) : Interval(a[0], b[0]);
 		y = a[1] > b[1] ? Interval(b[1], a[1]) : Interval(a[1], b[1]);
 		z = a[2] > b[2] ? Interval(b[2], a[2]) : Interval(a[2], b[2]);
+		PadToMinimums();
 	}
 
 	aabb(const aabb& a, const aabb& b)
@@ -19,6 +23,7 @@ public:
 		x = Interval(std::fmin(a.x.min, b.x.min), std::fmax(a.x.max, b.x.max));
 		y = Interval(std::fmin(a.y.min, b.y.min), std::fmax(a.y.max, b.y.max));
 		z = Interval(std::fmin(a.z.min, b.z.min), std::fmax(a.z.max, b.z.max));
+		PadToMinimums();
 	}
 
 	const Interval& GetAxis(int i) const {
@@ -59,7 +64,14 @@ public:
 
 	const static aabb empty, universe;
 private:
+	void PadToMinimums() 
+	{
+		double epsilon = 0.00001;
+		if (x.Size() < epsilon) x = x.Expand(epsilon);
+		if (y.Size() < epsilon) y = y.Expand(epsilon);
+		if (z.Size() < epsilon) z = z.Expand(epsilon);
 
+	}
 };
 
 const aabb aabb::empty = aabb(Interval::empty, Interval::empty, Interval::empty);

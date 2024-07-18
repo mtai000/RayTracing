@@ -2,6 +2,8 @@
 
 #include "rtweekend.h"
 #include <cassert>
+#include "Texture.h"
+
 class Material {
 public:
 	virtual ~Material() = default;
@@ -11,13 +13,18 @@ public:
 		return false;
 	}
 
+	virtual Color Emmitted(double u, double v, const Point3& p) const {
+		return Color(0, 0, 0);
+	}
+
 };
 
 
 class LamberMaterial :public Material {
 public:
-	LamberMaterial(const Color& albedo) { mAlbedo = albedo; }
-
+	//LamberMaterial(const Color& albedo) { mAlbedo = albedo; }
+	LamberMaterial(const Color& c) : mTexture(make_shared<SolidColor>(c)) {}
+	LamberMaterial(shared_ptr<Texture> tex) : mTexture(tex) {}
 	bool Scatter(const Ray& in_ray, const HitRecord& rec, Color& attenuation, Ray& scatted)
 		const override {
 		Vec3 direction = rec.Normal + RandomUnitVec();
@@ -25,12 +32,13 @@ public:
 			direction = rec.Normal;
 
 		scatted = Ray(rec.p, direction, in_ray.GetTime());
-		attenuation = mAlbedo;
+		attenuation = mTexture->Value(rec.u, rec.v, rec.p);
 		return true;
 	}
 
 private:
 	Color mAlbedo;
+	shared_ptr<Texture> mTexture;
 };
 
 
@@ -87,4 +95,18 @@ private:
 		r0 *= r0;
 		return r0 + (1 - r0) * pow((1 - cos_theta), 5);
 	}
+};
+
+
+class DiffuseLight : public Material {
+public:
+	DiffuseLight(shared_ptr<Texture> tex) :mTexture(tex) {}
+	DiffuseLight(const Color& emit) :mTexture(make_shared<SolidColor>(emit)) {}
+
+	Color Emitted(double u, double v, const Point3& p) const override {
+		return mTexture->Value(u, v, p);
+	}
+
+private:
+	shared_ptr<Texture> mTexture;
 };

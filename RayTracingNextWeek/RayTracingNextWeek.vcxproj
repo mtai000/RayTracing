@@ -134,12 +134,16 @@
     <ClInclude Include="Hittable_list.h" />
     <ClInclude Include="Interval.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Perlin.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="rtweekend.h" />
+    <ClInclude Include="rtw_stb_image.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="MyTimer.h" />
     <ClInclude Include="bvh.h" />
     <ClInclude Include="svh.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
   <ItemGroup>

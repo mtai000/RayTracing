@@ -27,6 +27,12 @@ public:
 		if (x > max) return max;
 		return x;
 	}
+
+	Interval Expand(double epsilon)
+	{
+		epsilon = fabs(epsilon);
+		return Interval(min - epsilon, max + epsilon);
+	}
 };
 
 const Interval Interval::empty = Interval(Infinity, -Infinity);

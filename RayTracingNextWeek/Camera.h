@@ -6,6 +6,8 @@
 #include <fstream>
 #include <thread>
 #include <mutex>
+#include <format>
+#include <string>
 
 class Camera {
 public:
@@ -40,7 +42,7 @@ public:
 		}
 	}
 
-	void Render(Hittable_list& world) {
+	void Render(Hittable_list& world, bool bUseMultiThread = true) {
 		Init();
 		//std::cout << "P3\n" << mWidth << ' ' << mHeight << "\n255\n" << std::endl;
 
@@ -49,7 +51,7 @@ public:
 		auto heightForThread = mHeight / core_num + 1;
 		std::vector<std::thread> jobs;
 
-		if (1)
+		if (bUseMultiThread)
 		{
 			for (int i = 0; i < core_num; i++) {
 				jobs.push_back(std::thread(RenderThread, std::ref(world), i * heightForThread, std::fmin((i + 1) * heightForThread, mHeight), std::ref(*this)));
@@ -71,6 +73,7 @@ public:
 		std::ofstream file;
 		file.open(filename);
 		file << "P3\n" << mWidth << ' ' << mHeight << "\n255\n" << std::endl;
+		std::string outStr = "";
 		for (int i = 0; i < mColorFrame.size(); i++)
 		{
 			auto r = mColorFrame[i].x();
@@ -85,9 +88,11 @@ public:
 			auto ig = int(256 * interval.Clamp(g));
 			auto ib = int(256 * interval.Clamp(b));
 
-			file << ir << ' ' << ig << ' ' << ib << std::endl;
+			outStr += std::to_string(ir) + ' ' + std::to_string(ig) + ' ' + std::to_string(ib) + '\n';
+			//file << ir << ' ' << ig << ' ' << ib << std::endl;
 			//Write_Color(file, mColorFrame[i]);
 		}
+		file << outStr;
 		file.close();
 	}
 
@@ -129,6 +134,7 @@ private:
 
 	std::mutex g_mutex;
 	int complete_line = 0;
+	Color mBackgroundColor;
 
 	Vec3 defocus_u;
 	Vec3 defocus_v;

@@ -7,11 +7,16 @@
 #include "MyTimer.h"
 #include "bvh.h"
 #include "svh.h"
+#include "Color.h"
+#include "Quad.h"
 
-void Process(const char* output) {
+std::string output = "image.ppm";
+
+void Process() {
 	Hittable_list world;
 
-	auto ground_material = make_shared<LamberMaterial>(Color(0.5, 0.5, 0.5));
+	auto Checker = make_shared<CheckerTexture>(3, Color(.2, .3, .1), Color(.9, .9, .9));
+	auto ground_material = make_shared<LamberMaterial>(Checker);
 	world.Add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, ground_material));
 
 	for (int a = -11; a < 11; a++) {
@@ -55,8 +60,8 @@ void Process(const char* output) {
 	world = Hittable_list(make_shared<bvh>(world));
 
 	Camera cam;
-	cam.SetImageHeightAndAspectRatio(400, 16.0 / 9);
-	cam.SetSampleNum(500);
+	cam.SetImageHeightAndAspectRatio(600, 16.0 / 9);
+	cam.SetSampleNum(50);
 	cam.SetMaxDepth(50);
 
 	cam.SetCameraPara(Vec3(13, 2, 3), Vec3(0, 0, 0), Vec3(0, 1, 0), 25);
@@ -64,11 +69,103 @@ void Process(const char* output) {
 	cam.mDefocusLength = 10.0;
 
 	cam.Render(world);
-	cam.WriteBufferToFile(output);
+	cam.WriteBufferToFile(output.c_str());
 }
 
+void CheckerSpheres() {
+	Hittable_list world;
+
+	auto checker = make_shared<CheckerTexture>(3, Color(.2, .3, .1), Color(.9, .9, .9));
+
+	world.Add(make_shared<Sphere>(Point3(0, -10, 0), 10, make_shared<LamberMaterial>(checker)));
+	world.Add(make_shared<Sphere>(Point3(0, 10, 0), 10, make_shared<LamberMaterial>(checker)));
+
+	Camera cam;
+	cam.SetImageHeightAndAspectRatio(800, 16.0 / 9);
+	cam.SetSampleNum(50);
+	cam.SetMaxDepth(50);
+
+	cam.SetCameraPara(Vec3(13, 2, 3), Vec3(0, 0, 0), Vec3(0, 1, 0), 25);
+	cam.mDefocusAngle = 0.0;
+	cam.mDefocusLength = 10.0;
+
+	cam.Render(world);
+	cam.WriteBufferToFile(output.c_str());
+}
+
+void earth()
+{
+	auto earth_texture = make_shared<ImageTexture>("image/earthmap.jpg");
+	auto earth_surface = make_shared<LamberMaterial>(earth_texture);
+	auto globe = make_shared<Sphere>(Point3(0, 0, 0), 2, earth_surface);
+	Hittable_list world;
+	world.Add(globe);
+	Camera cam;
+	cam.SetImageHeightAndAspectRatio(800, 16.0 / 9);
+	cam.SetSampleNum(50);
+	cam.SetMaxDepth(50);
+
+	cam.SetCameraPara(Vec3(13, 2, 3), Vec3(0, 0, 0), Vec3(0, 1, 0), 25);
+	cam.mDefocusAngle = 0.0;
+	cam.mDefocusLength = 10.0;
+
+	cam.Render(world);
+	cam.WriteBufferToFile(output.c_str());
+}
+
+void PerlinSpheres() {
+	Hittable_list world;
+	auto pertext = make_shared<NoiseTexture>(4);
+	world.Add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, make_shared<LamberMaterial>(pertext)));
+	world.Add(make_shared<Sphere>(Point3(0, 2, 0), 2, make_shared<LamberMaterial>(pertext)));
+
+	Camera cam;
+	cam.SetImageHeightAndAspectRatio(800, 16.0 / 9);
+	cam.SetSampleNum(50);
+	cam.SetMaxDepth(50);
+
+	cam.SetCameraPara(Vec3(13, 2, 3), Vec3(0, 0, 0), Vec3(0, 1, 0), 25);
+	cam.mDefocusAngle = 0.0;
+	cam.mDefocusLength = 10.0;
+
+	cam.Render(world);
+	cam.WriteBufferToFile(output.c_str());
+}
+
+void Quads() {
+	//auto green = make_shared<LamberMaterial>(Color(0.2, 1.0, 0.2));
+	//auto back = make_shared<Quad>(Point3(-2, -2, 0), Vec3(4, 0, 0), Vec3(0, 4, 0), green);
+	//Ray test(Vec3(0, 0, 1), Vec3(0, 0, -1), 1.0);
+	//HitRecord rec;
+	//back->Hit(test, Interval(0, 1.0), rec);
+	Hittable_list world;
+
+	auto left_red		= make_shared<LamberMaterial>(Color(1.0, 0.2, 0.2));
+	auto back_green		= make_shared<LamberMaterial>(Color(0.2, 1.0, 0.2));
+	auto right_blue		= make_shared<LamberMaterial>(Color(0.2, 0.2, 1.0));
+	auto upper_orange	= make_shared<LamberMaterial>(Color(1.0, 0.5, 0.0));
+	auto lower_teal		= make_shared<LamberMaterial>(Color(0.2, 0.8, 0.8));
+
+	world.Add(make_shared<Quad>(Point3(-3, -2, 5), Vec3(0, 0, -4), Vec3(0, 4,  0), left_red));
+	world.Add(make_shared<Quad>(Point3(-2, -2, 0), Vec3(4, 0,  0), Vec3(0, 4,  0), back_green));
+	world.Add(make_shared<Quad>(Point3( 3, -2, 1), Vec3(0, 0,  4), Vec3(0, 4,  0), right_blue));
+	world.Add(make_shared<Quad>(Point3(-2,  3, 1), Vec3(4, 0,  0), Vec3(0, 0,  4), upper_orange));
+	world.Add(make_shared<Quad>(Point3(-2, -3, 5), Vec3(4, 0,  0), Vec3(0, 0, -4), lower_teal));
+
+
+	Camera cam;
+	cam.SetImageHeightAndAspectRatio(800, 1.0);
+	cam.SetSampleNum(50);
+	cam.SetMaxDepth(50);
+
+	cam.SetCameraPara(Vec3(0, 0, 9), Vec3(0, 0, 0), Vec3(0, 1, 0), 80);
+	cam.mDefocusAngle = 0.0;
+
+	cam.Render(world);
+	cam.WriteBufferToFile(output.c_str());
+}
 
 int main() {
 	MyTimer t;
-	Process("image.ppm");
+	Quads();
 }

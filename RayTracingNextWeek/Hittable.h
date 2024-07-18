@@ -7,7 +7,10 @@ public:
 	Point3 p;
 	Vec3 Normal;
 	double t;
+	double u;
+	double v;
 	bool front_face;
+
 	shared_ptr<class Material> mat;
 
 	void SetFaceNormal(const Ray& r, const Vec3& _normal) {

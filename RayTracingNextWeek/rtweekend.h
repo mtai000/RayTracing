@@ -28,9 +28,16 @@ inline double random_double(double min, double max)
 	return random_double() * (max - min) + min;
 }
 
+template<typename T>
+inline T clamp(T x, T low, T high)
+{
+	return x < low ? low : (x > high ? high : x);
+}
+
 #include "Vec3.h"
 #include "Ray.h"
 #include "Interval.h"
 #include "Color.h"
 #include "Hittable.h"
 #include "Ray.h"
+#include "Material.h"
