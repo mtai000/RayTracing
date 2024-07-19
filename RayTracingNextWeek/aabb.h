@@ -40,7 +40,7 @@ public:
 	}
 
 	bool Hit(const Ray& r, Interval ray_t) const {
-		auto inv_dir = 1 / r.GetDirection();
+		auto inv_dir = 1.0 / r.GetDirection();
 		for (int i = 0; i < 3; i++) {
 			const Interval& a = GetAxis(i);
 			auto min = (a.min - r.GetOrigin()[i]) * inv_dir[i];

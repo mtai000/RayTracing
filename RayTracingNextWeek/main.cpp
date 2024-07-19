@@ -251,17 +251,104 @@ void CornellSmoke() {
 }
 
 
-int main() {
+void FinalScene(int height, int samplesPerPixel, int max_depth)
+{
+
+	//ground boxes
+	Hittable_list boxes;
+	auto ground = make_shared<LamberMaterial>(Color(.48, .83, .53));
+
+	int boxesPerSide = 20;
+	for (int i = 0; i < boxesPerSide; i++)
+	{
+		for (int j = 0; j < boxesPerSide; j++)
+		{
+			auto w = 100.0;
+			auto x0 = -1000.0 + j * w;
+			auto z0 = -1000.0 + j * w;
+
+			auto y0 = 0.0;
+			auto x1 = x0 + w;
+			auto y1 = random_double(1, 101);
+			auto z1 = z0 + w;
+
+			boxes.Add(box(Point3(x0, y0, z0), Point3(x1, y1, z1), ground));
+		}
+	}
+
+	// world add ground
+	Hittable_list world;
+	world.Add(make_shared<bvh>(boxes));
+
+	// add light
+	auto light = make_shared<DiffuseLight>(Color(7, 7, 7));
+	world.Add(make_shared<Quad>(Point3(123, 544, 147), Vec3(300, 0, 0), Vec3(0, 0, 265), light));
+
+	//add moving  sphere
+	auto center1 = Point3(400, 400, 200);
+	auto center2 = center1 + Vec3(30, 0, 0);
+	auto sphereMaterial = make_shared<LamberMaterial>(Color(.7, .3, .1));
+	world.Add(make_shared<Sphere>(center1, center2, 50, sphereMaterial));
+
+	// Add dielectric sphere and metal sphere
+	world.Add(make_shared<Sphere>(Point3(260, 150, 45), 50, make_shared<DielectricMaterial>(1.5)));
+	world.Add(make_shared<Sphere>(Point3(0, 150, 145), 50, make_shared<MetalMaterial>(Color(.8, .8, .9), 1.0)));
+
+	//
+	auto boundary = make_shared<Sphere>(Point3(360, 150, 145), 70, make_shared<DielectricMaterial>(1.5));
+	world.Add(boundary);
+	world.Add(make_shared<ConstantMedium>(boundary, 0.2, Color(.2, .4, .9)));
+	boundary = make_shared<Sphere>(Point3(0, 0, 0), 5000, make_shared<DielectricMaterial>(1.5));
+	world.Add(make_shared<ConstantMedium>(boundary, .0001, Color(1, 1, 1)));
+
+	// add earth
+	auto emat = make_shared<LamberMaterial>(make_shared<ImageTexture>("image/earthmap.jpg"));
+	world.Add(make_shared<Sphere>(Point3(400, 200, 400), 100, emat));
+	auto pertext = make_shared<NoiseTexture>(.2);
+	world.Add(make_shared<Sphere>(Point3(220, 280, 300), 80, make_shared<LamberMaterial>(pertext)));
+
+	// add 1000 small sphere
+	Hittable_list boxes2;
+	auto white = make_shared<LamberMaterial>(Color(.73, .73, .73));
+	int ns = 1000;
+	for (int j = 0; j < ns; j++)
+	{
+		auto pos = (RandomUnitVec() * 165 + Vec3(165, 165, 165)) * .5;
+		boxes2.Add(make_shared<Sphere>(pos, 10, white));
+	}
+	world.Add(make_shared<bvh>(boxes2));
+	world.Add(make_shared<Translate>(make_shared<RotateY>(make_shared<bvh>(boxes2), 15), Vec3(-100, 270, 395)));
+
+	Camera cam;
+	cam.SetImageHeightAndAspectRatio(height, 1.0);
+	cam.SetSampleNum(samplesPerPixel);
+	cam.SetMaxDepth(max_depth);
+	cam.SetBackground(Color(0, 0, 0));
+
+	cam.SetCameraPara(Vec3(478, 278, -600), Vec3(278, 278, 0), Vec3(0, 1, 0), 40);
+	cam.mDefocusAngle = 0.0;
+
+	cam.Render(world);
+	cam.WriteBufferToFile(output.c_str());
+}
+
+int main(int argc, char** argv) {
 	MyTimer t;
 
-	switch (7) {
-	case 1:  Process();          break;
-	case 2:  CheckerSpheres();         break;
-	case 3:  earth();                     break;
-	case 4:  PerlinSpheres();            break;
-	case 5:  Quads();                     break;
+	int test = 0;
+	if (argc > 1)
+		test = int(argv[1]);
+	std::cout << "execute test :" << test << std::endl;
+	output = "image" + std::to_string(test) + ".ppm";
+	switch (test) {
+	case 1:  Process();					break;
+	case 2:  CheckerSpheres();          break;
+	case 3:  earth();                   break;
+	case 4:  PerlinSpheres();           break;
+	case 5:  Quads();                   break;
 	case 6:  CornelBox();               break;
-	case 7:  CornellSmoke();             break;
-	default: ; break;
+	case 7:  CornellSmoke();            break;
+	case 8:  FinalScene(800, 10000, 40);break;
+	default:; FinalScene(400, 50, 4);   break;
 	}
 }

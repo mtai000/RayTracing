@@ -49,7 +49,7 @@ public:
 
 		auto core_num = std::thread::hardware_concurrency();
 		//core_num = 1;
-		auto heightForThread = mHeight / core_num + 1;
+		auto heightForThread = mHeight / core_num;
 		std::vector<std::thread> jobs;
 
 		if (bUseMultiThread)
@@ -63,7 +63,7 @@ public:
 		}
 		else
 		{
-			RenderThread(world, 0, mHeight - 1, *this);
+			RenderThread(world, 0, mHeight, *this);
 		}
 
 		std::clog << "\rDone			\n";

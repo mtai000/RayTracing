@@ -86,8 +86,7 @@ inline Vec3 operator/ (const Vec3& u, double _d) {
 }
 
 inline Vec3 operator/ (double _d, const Vec3& u) {
-	auto div = 1 / _d;
-	return Vec3(u[0] * div, u[1] * div, u[2] * div);
+	return Vec3(_d / u[0], _d / u[1],  _d / u[2]);
 }
 
 inline std::ostream& operator<< (std::ostream& outStream, const Vec3& v) {

@@ -4,33 +4,6 @@
 #include "Sphere.h"
 #include "Camera.h"
 #include "Material.h"
-//int main() {
-//	Hittable_list world;
-//	auto material_ground = make_shared<LamberMaterial>(Color(0.8, 0.8, 0.0));
-//	auto material_center = make_shared<LamberMaterial>(Color(0.1, 0.2, 0.5));
-//	//auto material_left = make_shared<MetalMaterial>(Color(0.8, 0.8, 0.8), 0.3);
-//	auto material_left = make_shared<DielectricMaterial>(1.5);
-//	auto material_bubble = make_shared<DielectricMaterial>(1 / 1.5);
-//	auto material_right = make_shared<MetalMaterial>(Color(0.8, 0.6, 0.2), 1.0);
-//
-//	world.Add(make_shared<Sphere>(Point3(0.0, -100.5, -1.0), 100.0, material_ground));
-//	world.Add(make_shared<Sphere>(Point3(0.0, 0.0, -1.2), 0.5, material_center));
-//	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.5, material_left));
-//	world.Add(make_shared<Sphere>(Point3(-1.0, 0.0, -1.0), 0.4, material_bubble));
-//	world.Add(make_shared<Sphere>(Point3(1.0, 0.0, -1.0), 0.5, material_right));
-//
-//
-//	Camera cam;
-//	cam.SetCameraPara(Vec3(-2, 2, 1), Vec3(0, 0, -1), Vec3(0, 1, 0), 20.0);
-//	cam.mDefocusAngle = 10;
-//	cam.mDefocusLength = 3.4;
-//	cam.SetSampleNum(10);
-//	//Need set a bigger number, if set '5' , bubble sphere will be black
-//	cam.SetMaxDepth(50);
-//	cam.Render(world);
-//
-//}
-
 
 int main() {
 	Hittable_list world;
