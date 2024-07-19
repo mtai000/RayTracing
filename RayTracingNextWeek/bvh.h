@@ -1,6 +1,7 @@
 #pragma once
 #include "Hittable.h"
 #include "Hittable_list.h"
+#include <algorithm>
 class bvh : public Hittable {
 public:
 	bvh(Hittable_list list) : bvh(list.mObjects, 0, list.mObjects.size())

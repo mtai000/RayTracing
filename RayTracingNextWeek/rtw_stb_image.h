@@ -1,5 +1,5 @@
 #pragma once
-
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "cstdlib"
 #include <iostream>
@@ -69,7 +69,7 @@ private:
 	unsigned char floatToByte(float value) {
 		if (value <= 0.0) return 0;
 		if (value >= 1.0) return 255;
-		return unsigned int(256.0 * value);
+		return (unsigned int)(256.0 * value);
 	}
 
 };

@@ -6,7 +6,6 @@
 #include <fstream>
 #include <thread>
 #include <mutex>
-#include <format>
 #include <string>
 
 class Camera {

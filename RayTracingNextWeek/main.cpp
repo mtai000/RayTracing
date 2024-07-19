@@ -337,7 +337,7 @@ int main(int argc, char** argv) {
 
 	int test = 0;
 	if (argc > 1)
-		test = int(argv[1]);
+		test = std::atoi(argv[1]);
 	std::cout << "execute test :" << test << std::endl;
 	output = "image" + std::to_string(test) + ".ppm";
 	switch (test) {
