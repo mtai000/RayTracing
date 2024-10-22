@@ -7,6 +7,7 @@
 #include <thread>
 #include <mutex>
 #include <string>
+#include "stb_image_write.h"
 
 class Camera {
 public:
@@ -47,6 +48,7 @@ public:
 		//std::cout << "P3\n" << mWidth << ' ' << mHeight << "\n255\n" << std::endl;
 
 		auto core_num = std::thread::hardware_concurrency();
+		std::cout << "Core number is : " << core_num << std::endl;
 		//core_num = 1;
 		auto heightForThread = mHeight / core_num;
 		std::vector<std::thread> jobs;
@@ -68,12 +70,14 @@ public:
 		std::clog << "\rDone			\n";
 	}
 
+
 	void WriteBufferToFile(const char* filename)
 	{
 		std::ofstream file;
 		file.open(filename);
 		file << "P3\n" << mWidth << ' ' << mHeight << "\n255\n" << std::endl;
 		std::string outStr = "";
+		std::vector<char> outputBuffer;
 		for (int i = 0; i < mColorFrame.size(); i++)
 		{
 			auto r = mColorFrame[i].x();
@@ -91,9 +95,16 @@ public:
 			outStr += std::to_string(ir) + ' ' + std::to_string(ig) + ' ' + std::to_string(ib) + '\n';
 			//file << ir << ' ' << ig << ' ' << ib << std::endl;
 			//Write_Color(file, mColorFrame[i]);
+			outputBuffer.push_back(ir);
+			outputBuffer.push_back(ig);
+			outputBuffer.push_back(ib);
 		}
 		file << outStr;
 		file.close();
+
+		std::string pngFile = std::string(filename) + ".png";
+		std::cout << "Output png file : " << pngFile << std::endl;
+		stbi_write_png(pngFile.c_str(), mWidth, mHeight, 3, mColorFrame.data(), 0);
 	}
 
 	void SetPosition(Vec3 pos) { mPosition = pos; }

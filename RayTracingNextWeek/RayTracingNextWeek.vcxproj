@@ -143,12 +143,14 @@
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="MyTimer.h" />
     <ClInclude Include="bvh.h" />
+    <ClInclude Include="stb.h" />
     <ClInclude Include="svh.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Vec3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="stb.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
